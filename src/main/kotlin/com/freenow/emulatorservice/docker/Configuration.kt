@@ -10,5 +10,5 @@ import java.net.URI
 class Configuration {
 
     @Bean
-    fun provideDockerClient() = LocalDocker(File("/var/run/docker.sock"),"v1.40");
+    fun provideDockerClient() = LocalDocker(File("/var/run/docker.sock"),"v1.38");
 }
