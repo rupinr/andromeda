@@ -19,9 +19,9 @@ object DockerAndroidContainer {
         val portBindings = Json.createObjectBuilder()
 
         portBindings.add("5555/tcp", Json.createArrayBuilder().add(Json.createObjectBuilder()
-                .add("HostPort", "5555").build()))
+                .add("HostPort", "5556").build()))
         portBindings.add("6080/tcp",Json.createArrayBuilder().add(Json.createObjectBuilder()
-                .add("HostPort", "6080").build()))
+                .add("HostPort", "6081").build()))
 
 
         val hostConfig =  Json.createObjectBuilder().add("PortBindings", portBindings)
