@@ -23,8 +23,9 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-	implementation("com.github.docker-java:docker-java:3.2.1")
-
+	implementation("com.amihaiemil.web:docker-java-api:0.0.11")
+	implementation("javax.json:javax.json-api:1.1.4")
+	implementation("org.glassfish:javax.json:1.1")
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
 		exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
 	}

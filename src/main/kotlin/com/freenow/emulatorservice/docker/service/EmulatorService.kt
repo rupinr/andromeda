@@ -1,32 +1,31 @@
 package com.freenow.emulatorservice.docker.service
 
+import com.amihaiemil.docker.Docker
 import com.freenow.emulatorservice.emulator.Emulator
-import com.github.dockerjava.api.DockerClient
-import com.github.dockerjava.api.model.ExposedPort
-import com.github.dockerjava.api.model.HostConfig
-import com.github.dockerjava.api.model.Ports
-import com.github.dockerjava.core.DockerClientBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.util.*
+import java.util.concurrent.TimeUnit
+import javax.json.Json
+import javax.json.JsonObject
+
 
 @Service
 class EmulatorService {
 
 
     @Autowired
-    lateinit var dockerClient: DockerClient
+    lateinit var dockerClient: Docker
 
     fun startEmulator(emulator: Emulator = Emulator("Samsung Galaxy S10")) {
-        val portBindings = Ports()
-        portBindings.bind(ExposedPort.tcp(5555), Ports.Binding.bindPort(5555))
 
-        val container= dockerClient.createContainerCmd("budtmo/docker-android-x86-9.0")
-                .withEnv("EMULATOR_ARGS=\"-partition-size 2048 -memory 3076 -cache-size 1000 -noaudio -no-boot-anim\"")
-                .withEnv("DEVICE="+"\""+emulator.name+"\"")
-                .withHostConfig(HostConfig.newHostConfig()
-                        .withPortBindings(portBindings)
-                        .withPrivileged(true))
-                .exec()
-        dockerClient.startContainerCmd(container.id)
+
+        dockerClient.images().pull("","")
+
+       val container=  dockerClient.containers().create("Docker_Service",DockerAndroidContainer.getContainer())
+        container.start()
+
+
     }
-}
+    }
+

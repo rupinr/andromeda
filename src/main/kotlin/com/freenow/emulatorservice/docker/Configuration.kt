@@ -1,13 +1,14 @@
 package com.freenow.emulatorservice.docker
 
-import com.github.dockerjava.api.DockerClient
-import com.github.dockerjava.core.DockerClientBuilder
+import com.amihaiemil.docker.LocalDocker
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import java.io.File
+import java.net.URI
 
 @Configuration
 class Configuration {
 
     @Bean
-    fun provideDockerClient(): DockerClient = DockerClientBuilder.getInstance().build()
+    fun provideDockerClient() = LocalDocker(File("/var/run/docker.sock"));
 }
