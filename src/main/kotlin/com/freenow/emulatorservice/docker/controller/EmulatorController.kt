@@ -17,7 +17,7 @@ class EmulatorController {
 
     @GetMapping("hello")
     fun test() {
-        print(dockerClient)
+        //print(dockerClient)
         emulatorService.startEmulator()
     }
 }

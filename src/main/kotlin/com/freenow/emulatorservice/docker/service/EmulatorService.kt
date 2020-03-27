@@ -23,6 +23,7 @@ class EmulatorService {
         //dockerClient.images().pull("","")
 
        val container=  dockerClient.containers().create("Docker_Service",DockerAndroidContainer.getContainer())
+        print(container.containerId())
         container.start()
 
 
