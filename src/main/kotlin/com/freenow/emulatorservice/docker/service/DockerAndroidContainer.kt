@@ -33,6 +33,6 @@ object DockerAndroidContainer {
 
 }
 
-fun main() {
+fun main2() {
     print(DockerAndroidContainer.getContainer())
 }
