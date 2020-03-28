@@ -26,6 +26,8 @@ dependencies {
 	implementation("com.amihaiemil.web:docker-java-api:0.0.11")
 	implementation("javax.json:javax.json-api:1.1.4")
 	implementation("org.glassfish:javax.json:1.1")
+	implementation ("com.google.code.gson:gson:2.8.6")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
 		exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
 	}
