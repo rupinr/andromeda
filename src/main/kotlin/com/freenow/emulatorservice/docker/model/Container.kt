@@ -293,16 +293,3 @@ data class EndpointsConfig(
         @SerializedName("EndpointsConfig")
         val EndpointsConfig: Any = Any()
 )
-
-//fun main() {
-//
-//    val gson = GsonBuilder().serializeNulls().create()
-//
-//    print(gson.toJson(Container(
-//            env = arrayListOf("EMULATOR_ARGS=-partition-size 2048 -memory 3076 -cache-size 1000 -noaudio -no-boot-anim", "DEVICE=Samsung Galaxy S10"),
-//            exposedPorts = mapOf("5555/tcp" to Any(), "6080/tcp" to Any()),
-//            image = "budtmo/docker-android-x86-9.0",
-//            HostConfig = HostConfig(PortBindings = mapOf("5555/tcp" to arrayListOf(HostIpPort(HostPort = "5561")),"6080/tcp" to arrayListOf(HostIpPort(HostPort = "6090"))))
-//            )
-//    ))
-//}
