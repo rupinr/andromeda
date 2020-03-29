@@ -17,7 +17,7 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
-	implementation ("org.springframework.boot:spring-boot-starter-data-jpa")
+	// implementation ("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
@@ -28,7 +28,7 @@ dependencies {
 	implementation("javax.json:javax.json-api:1.1.4")
 	implementation("org.glassfish:javax.json:1.1")
 	implementation ("com.google.code.gson:gson:2.8.6")
-	implementation ("com.h2database:h2:1.4.200")
+	// implementation ("com.h2database:h2:1.4.200")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
 		exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
