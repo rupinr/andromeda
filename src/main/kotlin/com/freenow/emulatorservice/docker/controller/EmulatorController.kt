@@ -4,10 +4,9 @@ import com.amihaiemil.docker.Docker
 import com.freenow.emulatorservice.docker.service.AndroidDevice
 import com.freenow.emulatorservice.docker.service.EmulatorService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
 
 @RestController
 class EmulatorController {
@@ -18,5 +17,10 @@ class EmulatorController {
     @PostMapping("emulator")
     fun test(@RequestBody androidDevice: AndroidDevice) {
         emulatorService.startEmulator(androidDevice)
+    }
+
+    @GetMapping("state", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun status(@RequestParam("containerName") containerName: String) : ResponseEntity<Any> {
+        return ResponseEntity.ok(emulatorService.isRunning(containerName))
     }
 }
