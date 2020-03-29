@@ -24,7 +24,7 @@ private const val BAMBOO_JOB_URL = "https://bamboo.intapps.it/browse/"
 private const val IMAGE_NAME = "budtmo/docker-android-x86-9.0"
 
 @Service
-class EmulatorService {
+class DockerService {
 
 
     @Autowired
@@ -98,6 +98,10 @@ class EmulatorService {
         } catch (ex: Exception) {
             CustomResponse(error = "Error in killing $containerName. " + ex.localizedMessage)
         }
+    }
+
+    fun pullImage(imageName: String, tag: String)  {
+        dockerClient.images().pull(imageName, tag)
     }
 
 
