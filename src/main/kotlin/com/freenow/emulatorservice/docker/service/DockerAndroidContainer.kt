@@ -1,12 +1,10 @@
 package com.freenow.emulatorservice.docker.service
 
-import com.freenow.emulatorservice.docker.model.ConfigurationKeys
 import com.freenow.emulatorservice.docker.model.Container
 import com.freenow.emulatorservice.docker.model.HostConfig
 import com.freenow.emulatorservice.docker.model.HostIpPort
 import com.freenow.emulatorservice.docker.utils.PortUtil
 import com.google.gson.GsonBuilder
-import org.springframework.beans.factory.annotation.Autowired
 import java.io.StringReader
 import javax.json.Json
 import javax.json.JsonObject
