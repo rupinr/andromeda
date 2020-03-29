@@ -4,6 +4,7 @@ import com.amihaiemil.docker.Docker
 import com.freenow.emulatorservice.docker.model.ConfigurationKeys
 import com.freenow.emulatorservice.docker.model.CustomResponse
 import com.freenow.emulatorservice.docker.model.RunningContainer
+import com.freenow.emulatorservice.docker.utils.PortUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.Duration
@@ -39,7 +40,12 @@ class DockerService {
                 throw Exception("Running container limit of " + configurationService.getConfigurationSafely(ConfigurationKeys.CONTAINER_LIMIT,CONTAINER_LIMIT.toString()) + "has been reached.")
             }
             val container = dockerClient.containers()
-                    .create(androidDevice.containerName, DockerAndroidContainer.getV3Container(AndroidDevice(imageName = getImageName(), deviceName = androidDevice.deviceName, containerName = androidDevice.containerName)))
+                    .create(androidDevice.containerName,
+                            DockerAndroidContainer.getV3Container(AndroidDevice(
+                                    imageName = getImageName(),
+                                    deviceName = androidDevice.deviceName, containerName = androidDevice.containerName),
+                            adbPort =PortUtil.getAdbPort(),
+                            webPort = PortUtil.getWebPort()))
             container.start()
             CustomResponse(data = "Docker container " + container.containerId() + " is started. Wait for it to turn healthy before doing adb connect")
         } catch (ex: Exception) {
@@ -75,7 +81,8 @@ class DockerService {
             val containerName = containerData[NAME]!!.toString().replace("/", "").replace("\"", "")
             RunningContainer(jobUrl = getBambooUrl() + containerName,
                     containerName = containerName,
-                    runningDuration = containerData[STATE]!!.asJsonObject()[STARTED_AT].toString().replace("\"", "").getRunningDuration())
+                    runningDuration = containerData[STATE]!!.asJsonObject()[STARTED_AT].toString().replace("\"", "").getRunningDuration()
+            ,adbPort = 0,webPort = 0)
         }
         return CustomResponse(data = list)
     }
