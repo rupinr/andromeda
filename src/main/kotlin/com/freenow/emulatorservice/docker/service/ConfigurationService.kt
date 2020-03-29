@@ -5,12 +5,17 @@ import com.freenow.emulatorservice.docker.model.ConfigurationKeys
 import com.freenow.emulatorservice.docker.repository.ConfigurationItemRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.util.logging.Level
+import java.util.logging.Logger
 
 @Service
 class ConfigurationService {
 
     @Autowired
     lateinit var configurationItemRepository: ConfigurationItemRepository
+
+    private val LOGGER = Logger.getLogger(EmulatorService::class.java.name)
+
 
     fun setConfiguration( configurationItem: ConfigurationItem) {
         val existingConfigurationItem = configurationItemRepository.findConfigurationItemByKey(configurationItem.key)
@@ -29,5 +34,17 @@ class ConfigurationService {
 
     fun getConfigurations() = configurationItemRepository.findAll()
 
+    fun getConfigurationSafely(key: ConfigurationKeys, defaultValue: String): String {
+        var configuration = defaultValue
+        try {
+            if( getConfiguration(key).isPresent ){
+                configuration = getConfiguration(key).get().value
+            }
+        }
+        catch (ex: Exception) {
+            LOGGER.log(Level.WARNING, "Unable to get $key")
+        }
+        return configuration
+    }
 
 }
