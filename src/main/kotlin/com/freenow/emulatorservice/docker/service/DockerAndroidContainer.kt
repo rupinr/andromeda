@@ -8,7 +8,6 @@ import com.google.gson.GsonBuilder
 import java.io.StringReader
 import javax.json.Json
 import javax.json.JsonObject
-import javax.json.JsonReader
 
 
 object DockerAndroidContainer {
@@ -23,7 +22,6 @@ object DockerAndroidContainer {
                 HostConfig = HostConfig(PortBindings = mapOf("5555/tcp" to arrayListOf(HostIpPort(HostPort = PortUtil.getAdbPort().toString())), "6080/tcp" to arrayListOf(HostIpPort(HostPort = PortUtil.getWebPort().toString()))))
         )
         )
-        val jsonObject = Json.createReader(StringReader( jsonString)).readObject()
-        return jsonObject
+        return Json.createReader(StringReader( jsonString)).readObject()
     }
 }
