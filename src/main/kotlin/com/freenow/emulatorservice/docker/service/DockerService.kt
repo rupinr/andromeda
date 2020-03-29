@@ -9,10 +9,18 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.Instant
+import javax.json.JsonObject
 
 
 private const val NAMES = "Names"
 private const val NAME = "Name"
+private const val HOST_CONFIG ="HostConfig"
+private const val PORT_BINDINGS ="PortBindings"
+private const val HOST_PORT ="HostPort"
+private const val ADB_PORT ="5555/tcp"
+private const val WEB_PORT ="6080/tcp"
+
+
 
 private const val STATE = "State"
 private const val HEALTH = "Health"
@@ -39,15 +47,23 @@ class DockerService {
             if (isRunningContainerLimitReached()) {
                 throw Exception("Running container limit of " + configurationService.getConfigurationSafely(ConfigurationKeys.CONTAINER_LIMIT,CONTAINER_LIMIT.toString()) + "has been reached.")
             }
+           val  adbPort =PortUtil.getAdbPort()
+            val webPort = PortUtil.getWebPort()
             val container = dockerClient.containers()
                     .create(androidDevice.containerName,
                             DockerAndroidContainer.getV3Container(AndroidDevice(
                                     imageName = getImageName(),
                                     deviceName = androidDevice.deviceName, containerName = androidDevice.containerName),
-                            adbPort =PortUtil.getAdbPort(),
-                            webPort = PortUtil.getWebPort()))
+                            adbPort = adbPort,
+                            webPort = webPort))
             container.start()
-            CustomResponse(data = "Docker container " + container.containerId() + " is started. Wait for it to turn healthy before doing adb connect")
+            CustomResponse(data = RunningContainer(
+                    adbPort =adbPort,
+                    webPort = webPort,
+                    containerName = androidDevice.containerName,
+                    runningDuration = "0 minutes",
+                    jobUrl = getBambooUrl()+androidDevice.containerName
+            ),message = "Wait for container to be healthy.")
         } catch (ex: Exception) {
             CustomResponse(error = ex.localizedMessage)
         }
@@ -82,9 +98,20 @@ class DockerService {
             RunningContainer(jobUrl = getBambooUrl() + containerName,
                     containerName = containerName,
                     runningDuration = containerData[STATE]!!.asJsonObject()[STARTED_AT].toString().replace("\"", "").getRunningDuration()
-            ,adbPort = 0,webPort = 0)
+            ,adbPort = getPort(containerData, ADB_PORT),webPort = getPort(containerData, WEB_PORT))
         }
         return CustomResponse(data = list)
+    }
+
+
+    private fun getPort(containerData: JsonObject, key: String): Int {
+        return containerData[HOST_CONFIG]!!
+                .asJsonObject()[PORT_BINDINGS]!!
+                .asJsonObject()[key]!!
+                .asJsonArray()[0].asJsonObject()[HOST_PORT]
+                .toString()
+                .replace("\"","")
+                .toInt()
     }
 
     private fun String.getRunningDuration(): String {
