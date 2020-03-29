@@ -13,10 +13,19 @@ class ConfigurationService {
     lateinit var configurationItemRepository: ConfigurationItemRepository
 
     fun setConfiguration( configurationItem: ConfigurationItem) {
-        configurationItemRepository.save(ConfigurationItem(key = configurationItem.key, value = configurationItem.value))
+        val existingConfigurationItem = configurationItemRepository.findConfigurationItemByKey(configurationItem.key)
+
+        if(existingConfigurationItem.isPresent) {
+            existingConfigurationItem.get().value = configurationItem.value
+            configurationItemRepository.save(existingConfigurationItem.get())
+        }
+        else {
+            configurationItemRepository.save(ConfigurationItem(key = configurationItem.key, value = configurationItem.value))
+        }
+
     }
 
-    fun getConfiguration(key: ConfigurationKeys) = configurationItemRepository.findConfigurationItemByKey(key).value
+    fun getConfiguration(key: ConfigurationKeys) = configurationItemRepository.findConfigurationItemByKey(key).get()
 
     fun getConfigurations() = configurationItemRepository.findAll()
 

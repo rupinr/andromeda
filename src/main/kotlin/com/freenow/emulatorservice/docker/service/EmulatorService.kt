@@ -1,6 +1,7 @@
 package com.freenow.emulatorservice.docker.service
 
 import com.amihaiemil.docker.Docker
+import com.freenow.emulatorservice.docker.model.ConfigurationKeys
 import com.freenow.emulatorservice.docker.model.CustomResponse
 import com.freenow.emulatorservice.docker.model.RunningContainer
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,6 +12,7 @@ import java.time.Instant
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.NoSuchElementException
+
 
 
 private const val NAMES = "Names"
@@ -33,10 +35,13 @@ class EmulatorService {
     @Autowired
     lateinit var dockerClient: Docker
 
+    @Autowired
+    lateinit var configurationService: ConfigurationService
+
     fun startEmulator(androidDevice: AndroidDevice) : CustomResponse {
         return try{
             if(isRunningContainerLimitReached()){
-                throw Exception("Running container limit of $CONTAINER_LIMIT has been reached.")
+                throw Exception("Running container limit of " +configurationService.getConfiguration(ConfigurationKeys.CONTAINER_LIMIT) +"has been reached.")
             }
             val container =  dockerClient.containers()
                     .create(androidDevice.containerName, DockerAndroidContainer.getV3Container(androidDevice))
@@ -68,7 +73,7 @@ class EmulatorService {
         for (container in containers) {
             size++
         }
-        return size >= CONTAINER_LIMIT
+        return size >= configurationService.getConfiguration(ConfigurationKeys.CONTAINER_LIMIT).value.toInt()
     }
 
     fun getRunningContainerDetails() : CustomResponse {
@@ -76,7 +81,7 @@ class EmulatorService {
         val list = containers.map {
             val containerData =  it.inspect()
             val containerName = containerData[NAME]!!.toString().replace("/","").replace("\"","")
-           RunningContainer (jobUrl = BAMBOO_JOB_URL+ containerName,
+           RunningContainer (jobUrl = configurationService.getConfiguration(ConfigurationKeys.BAMBOO_URL).value+ containerName,
                    containerName  = containerName,
                    runningDuration = containerData[STATE]!!.asJsonObject()[STARTED_AT].toString().replace("\"","").getRunningDuration())
         }
