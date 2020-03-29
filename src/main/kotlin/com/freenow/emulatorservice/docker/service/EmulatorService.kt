@@ -13,6 +13,9 @@ private const val HEALTH = "Health"
 private const val STATUS = "Status"
 private const val UNKNOWN ="unknown"
 
+//TODO, change to database
+private const val CONTAINER_LIMIT = 1
+
 @Service
 class EmulatorService {
 
@@ -22,6 +25,9 @@ class EmulatorService {
 
     fun startEmulator(androidDevice: AndroidDevice) : CustomResponse {
         return try{
+            if(isRunningContainerLimitReached()){
+                throw Exception("Running container limit of $CONTAINER_LIMIT has been reached.")
+            }
             val container =  dockerClient.containers()
                     .create(androidDevice.containerName, DockerAndroidContainer.getV3Container(androidDevice))
             container.start()
@@ -34,6 +40,7 @@ class EmulatorService {
     }
 
     fun isRunning(containerName: String) : CustomResponse {
+        isRunningContainerLimitReached()
         var healthStatus = ""
         healthStatus = try{
             val container = dockerClient.containers().first { it[NAMES]!!.asJsonArray()[0].toString()== "\"/$containerName\"" }
@@ -43,6 +50,15 @@ class EmulatorService {
             UNKNOWN
         }
         return CustomResponse(data = healthStatus.replace("\"",""))
+    }
+
+    fun isRunningContainerLimitReached() : Boolean{
+        val containers = dockerClient.containers()
+        var size = 0
+        for (container in containers) {
+            size++
+        }
+        return size >= CONTAINER_LIMIT
     }
 }
 
