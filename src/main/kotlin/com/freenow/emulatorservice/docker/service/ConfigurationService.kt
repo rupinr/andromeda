@@ -25,7 +25,7 @@ class ConfigurationService {
 
     }
 
-    fun getConfiguration(key: ConfigurationKeys) = configurationItemRepository.findConfigurationItemByKey(key).get()
+    fun getConfiguration(key: ConfigurationKeys) = configurationItemRepository.findConfigurationItemByKey(key)
 
     fun getConfigurations() = configurationItemRepository.findAll()
 

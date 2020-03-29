@@ -4,15 +4,13 @@ import com.amihaiemil.docker.Docker
 import com.freenow.emulatorservice.docker.model.ConfigurationKeys
 import com.freenow.emulatorservice.docker.model.CustomResponse
 import com.freenow.emulatorservice.docker.model.RunningContainer
+import javassist.bytecode.stackmap.TypeData.ClassName
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.Instant
-import java.util.*
-import java.util.concurrent.TimeUnit
-import kotlin.NoSuchElementException
-
+import java.util.logging.Level
+import java.util.logging.Logger
 
 
 private const val NAMES = "Names"
@@ -24,12 +22,14 @@ private const val STATUS = "Status"
 private const val UNKNOWN ="unknown"
 private const val STARTED_AT = "StartedAt"
 
-//TODO, change to database
-private const val CONTAINER_LIMIT = 1
-private const val BAMBOO_JOB_URL ="https://bamboo.intapps.it/browse/ANP-EUTJ2-"
+private const val CONTAINER_LIMIT = 3
+private const val BAMBOO_JOB_URL ="https://bamboo.intapps.it/browse/"
+private const val IMAGE_NAME = "budtmo/docker-android-x86-9.0"
 
 @Service
 class EmulatorService {
+
+    private val LOGGER = Logger.getLogger(EmulatorService::class.java.name)
 
 
     @Autowired
@@ -41,10 +41,10 @@ class EmulatorService {
     fun startEmulator(androidDevice: AndroidDevice) : CustomResponse {
         return try{
             if(isRunningContainerLimitReached()){
-                throw Exception("Running container limit of " +configurationService.getConfiguration(ConfigurationKeys.CONTAINER_LIMIT) +"has been reached.")
+                throw Exception("Running container limit of " +configurationService.getConfiguration(ConfigurationKeys.CONTAINER_LIMIT).get().value +"has been reached.")
             }
             val container =  dockerClient.containers()
-                    .create(androidDevice.containerName, DockerAndroidContainer.getV3Container(androidDevice))
+                    .create(androidDevice.containerName, DockerAndroidContainer.getV3Container(AndroidDevice(imageName = getImageName(), deviceName = androidDevice.deviceName, containerName = androidDevice.containerName)))
             container.start()
             CustomResponse(data = "Docker container "+container.containerId()+" is started. Wait for it to turn healthy before doing adb connect")
         }
@@ -73,7 +73,7 @@ class EmulatorService {
         for (container in containers) {
             size++
         }
-        return size >= configurationService.getConfiguration(ConfigurationKeys.CONTAINER_LIMIT).value.toInt()
+        return size >= getMaxContainerCount()
     }
 
     fun getRunningContainerDetails() : CustomResponse {
@@ -81,7 +81,7 @@ class EmulatorService {
         val list = containers.map {
             val containerData =  it.inspect()
             val containerName = containerData[NAME]!!.toString().replace("/","").replace("\"","")
-           RunningContainer (jobUrl = configurationService.getConfiguration(ConfigurationKeys.BAMBOO_URL).value+ containerName,
+           RunningContainer (jobUrl = getBambooUrl()+ containerName,
                    containerName  = containerName,
                    runningDuration = containerData[STATE]!!.asJsonObject()[STARTED_AT].toString().replace("\"","").getRunningDuration())
         }
@@ -109,4 +109,47 @@ class EmulatorService {
             CustomResponse(error = "Error in killing $containerName. "+ex.localizedMessage)
         }
     }
+
+    private fun getMaxContainerCount() : Int {
+        var containerLimit = CONTAINER_LIMIT
+        try {
+            if( configurationService.getConfiguration(ConfigurationKeys.CONTAINER_LIMIT).isPresent ){
+                containerLimit = configurationService.getConfiguration(ConfigurationKeys.CONTAINER_LIMIT).get().value.toInt()
+            }
+        }
+        catch (ex: Exception) {
+            LOGGER.log(Level.WARNING, "Unable to get CONTAINER_LIMIT")
+        }
+        return containerLimit
+    }
+
+    private fun getBambooUrl() : String {
+        var bambooUrl = BAMBOO_JOB_URL
+        try {
+            if( configurationService.getConfiguration(ConfigurationKeys.BAMBOO_URL).isPresent ){
+                bambooUrl=  configurationService.getConfiguration(ConfigurationKeys.BAMBOO_URL).get().value
+            }
+        }
+        catch (exception: Exception) {
+            LOGGER.log(Level.WARNING, "Unable to get BAMBOO_URL")
+
+        }
+        return bambooUrl
+    }
+
+    private fun getImageName() : String {
+        var imageName = IMAGE_NAME
+        try {
+            if( configurationService.getConfiguration(ConfigurationKeys.DOCKER_IMAGE).isPresent ){
+                imageName=  configurationService.getConfiguration(ConfigurationKeys.DOCKER_IMAGE).get().value
+            }
+        }
+        catch (exception: Exception) {
+            LOGGER.log(Level.WARNING, "Unable to get DOCKER_IMAGE")
+
+        }
+        return imageName
+    }
+
+
 }
