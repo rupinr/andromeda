@@ -3,6 +3,7 @@ package com.freenow.emulatorservice.docker.service
 import com.freenow.emulatorservice.docker.model.ConfigurationItem
 import com.freenow.emulatorservice.docker.model.ConfigurationKeys
 import com.freenow.emulatorservice.docker.repository.ConfigurationItemRepository
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.logging.Level
@@ -14,8 +15,7 @@ class ConfigurationService {
     @Autowired
     lateinit var configurationItemRepository: ConfigurationItemRepository
 
-    private val LOGGER = Logger.getLogger(EmulatorService::class.java.name)
-
+    private val logger = KotlinLogging.logger {}
 
     fun setConfiguration( configurationItem: ConfigurationItem) {
         val existingConfigurationItem = configurationItemRepository.findConfigurationItemByKey(configurationItem.key)
@@ -32,7 +32,7 @@ class ConfigurationService {
 
     fun getConfiguration(key: ConfigurationKeys) = configurationItemRepository.findConfigurationItemByKey(key)
 
-    fun getConfigurations() = configurationItemRepository.findAll()
+    fun getConfigurations(): MutableList<ConfigurationItem> = configurationItemRepository.findAll()
 
     fun getConfigurationSafely(key: ConfigurationKeys, defaultValue: String): String {
         var configuration = defaultValue
@@ -42,7 +42,7 @@ class ConfigurationService {
             }
         }
         catch (ex: Exception) {
-            LOGGER.log(Level.WARNING, "Unable to get $key")
+            logger.error { "Unable to get $key" }
         }
         return configuration
     }

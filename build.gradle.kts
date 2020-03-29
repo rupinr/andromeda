@@ -29,6 +29,8 @@ dependencies {
 	implementation("org.glassfish:javax.json:1.1")
 	implementation ("com.google.code.gson:gson:2.8.6")
 	implementation ("com.h2database:h2:1.4.200")
+	implementation ("io.github.microutils:kotlin-logging:1.7.9")
+
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
 		exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
