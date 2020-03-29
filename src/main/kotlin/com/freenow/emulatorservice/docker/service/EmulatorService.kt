@@ -2,19 +2,29 @@ package com.freenow.emulatorservice.docker.service
 
 import com.amihaiemil.docker.Docker
 import com.freenow.emulatorservice.docker.model.CustomResponse
+import com.freenow.emulatorservice.docker.model.RunningContainer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.text.SimpleDateFormat
+import java.time.Duration
+import java.time.Instant
+import java.util.*
+import java.util.concurrent.TimeUnit
+import kotlin.NoSuchElementException
 
 
 private const val NAMES = "Names"
+private const val NAME = "Name"
 
 private const val STATE = "State"
 private const val HEALTH = "Health"
 private const val STATUS = "Status"
 private const val UNKNOWN ="unknown"
+private const val STARTED_AT = "StartedAt"
 
 //TODO, change to database
 private const val CONTAINER_LIMIT = 1
+private const val BAMBOO_JOB_URL ="https://bamboo.intapps.it/browse/ANP-EUTJ2-"
 
 @Service
 class EmulatorService {
@@ -61,6 +71,25 @@ class EmulatorService {
         return size >= CONTAINER_LIMIT
     }
 
+    fun getRunningContainerDetails() : CustomResponse {
+        val containers = dockerClient.containers()
+        val list = containers.map {
+            val containerData =  it.inspect()
+            val containerName = containerData[NAME]!!.toString().replace("/","").replace("\"","")
+           RunningContainer (jobUrl = BAMBOO_JOB_URL+ containerName,
+                   containerName  = containerName,
+                   runningDuration = containerData[STATE]!!.asJsonObject()[STARTED_AT].toString().replace("\"","").getRunningDuration())
+        }
+        return CustomResponse(data = list)
+    }
+
+    private fun String.getRunningDuration(): String {
+        val old = Instant.parse(this)
+        val now = Instant.now()
+        val seconds  = Duration.between(old,now).seconds
+        return String.format("%d Hours %02d Minutes and %02d Seconds", seconds / 3600, (seconds % 3600) / 60, (seconds % 60))
+    }
+
     fun killContainer(containerName: String) : CustomResponse {
         return try {
             val container = dockerClient.containers().first { it[NAMES]!!.asJsonArray()[0].toString()== "\"/$containerName\"" }
@@ -74,8 +103,5 @@ class EmulatorService {
         catch (ex: Exception) {
             CustomResponse(error = "Error in killing $containerName. "+ex.localizedMessage)
         }
-
-
     }
 }
-

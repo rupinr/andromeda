@@ -29,4 +29,9 @@ class EmulatorController {
     fun killContainer(@PathVariable("containerName") containerName: String) : ResponseEntity<Any> {
         return ResponseEntity.ok(emulatorService.killContainer(containerName))
     }
+
+    @GetMapping(path= ["/running"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun running() : ResponseEntity<Any> {
+        return ResponseEntity.ok(emulatorService.getRunningContainerDetails())
+    }
 }
