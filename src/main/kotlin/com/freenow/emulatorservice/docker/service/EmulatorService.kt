@@ -20,8 +20,14 @@ class EmulatorService {
     fun startEmulator() {
         val container = dockerClient.containers()
                 .create("Docker_Service", DockerAndroidContainer.getV3Container(AndroidDevice(deviceName = "Samsung Galaxy S10")))
-        print(container.containerId())
-        container.start()
+
+        try {
+            container.start()
+
+        }
+        catch (ex: Exception) {
+            container.start()
+        }
     }
 }
 
