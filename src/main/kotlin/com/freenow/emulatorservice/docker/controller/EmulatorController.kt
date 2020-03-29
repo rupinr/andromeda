@@ -9,18 +9,24 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
+@RequestMapping("emulator")
 class EmulatorController {
 
     @Autowired
     lateinit var emulatorService: EmulatorService
 
-    @PostMapping("emulator")
+    @PostMapping(consumes =  [MediaType.APPLICATION_JSON_VALUE], produces =  [MediaType.APPLICATION_JSON_VALUE])
     fun test(@RequestBody androidDevice: AndroidDevice) : ResponseEntity<Any> {
         return ResponseEntity.ok(emulatorService.startEmulator(androidDevice))
     }
 
-    @GetMapping("state", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun status(@RequestParam("containerName") containerName: String) : ResponseEntity<Any> {
+    @GetMapping(path= ["{containerName}/health"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun status(@PathVariable("containerName") containerName: String) : ResponseEntity<Any> {
         return ResponseEntity.ok(emulatorService.isRunning(containerName))
+    }
+
+    @DeleteMapping(path = ["{containerName}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun killContainer(@PathVariable("containerName") containerName: String) : ResponseEntity<Any> {
+        return ResponseEntity.ok(emulatorService.killContainer(containerName))
     }
 }

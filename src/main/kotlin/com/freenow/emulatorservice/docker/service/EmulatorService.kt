@@ -60,5 +60,22 @@ class EmulatorService {
         }
         return size >= CONTAINER_LIMIT
     }
+
+    fun killContainer(containerName: String) : CustomResponse {
+        return try {
+            val container = dockerClient.containers().first { it[NAMES]!!.asJsonArray()[0].toString()== "\"/$containerName\"" }
+            container.kill()
+            container.remove()
+            CustomResponse(data = "Successfully killed and removed $containerName")
+        }
+        catch (ex: NoSuchElementException) {
+            CustomResponse(error = "Error in killing $containerName. Container not found")
+        }
+        catch (ex: Exception) {
+            CustomResponse(error = "Error in killing $containerName. "+ex.localizedMessage)
+        }
+
+
+    }
 }
 
