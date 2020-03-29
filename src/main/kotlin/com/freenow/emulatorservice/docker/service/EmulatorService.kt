@@ -10,7 +10,7 @@ private const val NAMES = "Names"
 private const val STATE = "State"
 private const val HEALTH = "Health"
 private const val STATUS = "Status"
-private const val HEALTHY ="healthy"
+private const val UNKNOWN ="unknown"
 
 @Service
 class EmulatorService {
@@ -31,7 +31,7 @@ class EmulatorService {
             healthStatus = container.inspect()[STATE]!!.asJsonObject()[HEALTH]!!.asJsonObject()[STATUS]!!.toString()
         }
         catch (ex: Exception) {
-            healthStatus="unknown"
+            healthStatus=UNKNOWN
         }
         return healthStatus.replace("\"","")
     }
