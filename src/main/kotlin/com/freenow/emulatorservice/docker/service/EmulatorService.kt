@@ -1,5 +1,6 @@
 package com.freenow.emulatorservice.docker.service
 
+import com.amihaiemil.docker.Container
 import com.amihaiemil.docker.Docker
 import com.freenow.emulatorservice.emulator.Emulator
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,17 +18,10 @@ class EmulatorService {
     @Autowired
     lateinit var dockerClient: Docker
 
-    fun startEmulator() {
-        val container = dockerClient.containers()
-                .create("Docker_Service", DockerAndroidContainer.getV3Container(AndroidDevice(deviceName = "Samsung Galaxy S10")))
+    fun startEmulator(androidDevice: AndroidDevice) {
+         dockerClient.containers()
+                .create(androidDevice.containerName, DockerAndroidContainer.getV3Container(androidDevice)).start()
 
-        try {
-            container.start()
-
-        }
-        catch (ex: Exception) {
-            container.start()
-        }
     }
 }
 

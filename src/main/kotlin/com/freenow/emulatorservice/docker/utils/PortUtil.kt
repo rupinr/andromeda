@@ -6,10 +6,13 @@ import java.net.ServerSocket
 
 object PortUtil {
 
-    private fun create(ports: IntArray): ServerSocket {
+    private fun create(ports: IntArray) : Int {
         for (port in ports) {
-            return try {
-                ServerSocket(port)
+             try {
+                 val socket =  ServerSocket(port)
+                 val returnPort  = socket.localPort
+                 socket.close()
+                 return returnPort
             } catch (ex: IOException) {
                 continue  // try next port
             }
@@ -17,8 +20,8 @@ object PortUtil {
         throw IOException("no free port found")
     }
 
-    fun getAdbPort() =create((5000..5600).toList().toIntArray()).localPort
+    fun getAdbPort() =create((5055..5600).toList().toIntArray())
 
-    fun getWebPort() =create((7000..7600).toList().toIntArray()).localPort
+    fun getWebPort() =create((7000..7600).toList().toIntArray())
 
 }

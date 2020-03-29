@@ -5,5 +5,6 @@ data class AndroidDevice(
         val memomry: Int = 3076,
         val cacheSize: Int = 1000,
         val deviceName: String,
-        val imageName: String = "budtmo/docker-android-x86-9.0"
+        val imageName: String = "budtmo/docker-android-x86-9.0",
+        val containerName : String
 )
