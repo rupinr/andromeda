@@ -35,12 +35,12 @@ class EmulatorService {
 
     fun isRunning(containerName: String) : CustomResponse {
         var healthStatus = ""
-        try{
+        healthStatus = try{
             val container = dockerClient.containers().first { it[NAMES]!!.asJsonArray()[0].toString()== "\"/$containerName\"" }
-            healthStatus = container.inspect()[STATE]!!.asJsonObject()[HEALTH]!!.asJsonObject()[STATUS]!!.toString()
+            container.inspect()[STATE]!!.asJsonObject()[HEALTH]!!.asJsonObject()[STATUS]!!.toString()
         }
         catch (ex: Exception) {
-            healthStatus=UNKNOWN
+            UNKNOWN
         }
         return CustomResponse(data = healthStatus.replace("\"",""))
     }
