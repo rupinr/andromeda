@@ -17,16 +17,11 @@ class EmulatorService {
     @Autowired
     lateinit var dockerClient: Docker
 
-    fun startEmulator(emulator: Emulator = Emulator("Samsung Galaxy S10")) {
-
-
-        //dockerClient.images().pull("","")
-
-       val container=  dockerClient.containers().create("Docker_Service",DockerAndroidContainer.getV3Container())
+    fun startEmulator() {
+        val container = dockerClient.containers()
+                .create("Docker_Service", DockerAndroidContainer.getV3Container(AndroidDevice(deviceName = "Samsung Galaxy S10")))
         print(container.containerId())
         container.start()
-
-
     }
-    }
+}
 
