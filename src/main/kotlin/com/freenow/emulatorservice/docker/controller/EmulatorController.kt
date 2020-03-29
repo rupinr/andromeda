@@ -15,8 +15,8 @@ class EmulatorController {
     lateinit var emulatorService: EmulatorService
 
     @PostMapping("emulator")
-    fun test(@RequestBody androidDevice: AndroidDevice) {
-        emulatorService.startEmulator(androidDevice)
+    fun test(@RequestBody androidDevice: AndroidDevice) : ResponseEntity<Any> {
+        return ResponseEntity.ok(emulatorService.startEmulator(androidDevice))
     }
 
     @GetMapping("state", produces = [MediaType.APPLICATION_JSON_VALUE])
