@@ -134,11 +134,6 @@ class DockerService {
         }
     }
 
-    fun pullImage(imageName: String, tag: String)  {
-        dockerClient.images().pull(imageName, tag)
-    }
-
-
     private fun getMaxContainerCount(): Int = configurationService.getConfigurationSafely(ConfigurationKeys.CONTAINER_LIMIT, CONTAINER_LIMIT.toString()).toInt()
 
     private fun getBambooUrl(): String = configurationService.getConfigurationSafely(ConfigurationKeys.BAMBOO_URL, BAMBOO_JOB_URL)
