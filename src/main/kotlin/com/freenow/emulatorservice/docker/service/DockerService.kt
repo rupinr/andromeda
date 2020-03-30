@@ -45,7 +45,7 @@ class DockerService {
     fun startEmulator(androidDevice: AndroidDevice): CustomResponse {
         return try {
             if (isRunningContainerLimitReached()) {
-                throw Exception("Running container limit of " + configurationService.getConfigurationSafely(ConfigurationKeys.CONTAINER_LIMIT,CONTAINER_LIMIT.toString()) + "has been reached.")
+                throw Exception("Running container limit of " + configurationService.getConfigurationSafely(ConfigurationKeys.CONTAINER_LIMIT,CONTAINER_LIMIT.toString()) + " has been reached.")
             }
            val  adbPort =PortUtil.getAdbPort()
             val webPort = PortUtil.getWebPort()
