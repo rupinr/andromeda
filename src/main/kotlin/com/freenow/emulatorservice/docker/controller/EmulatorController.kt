@@ -15,7 +15,7 @@ class EmulatorController {
     lateinit var dockerService: DockerService
 
     @PostMapping(consumes =  [MediaType.APPLICATION_JSON_VALUE], produces =  [MediaType.APPLICATION_JSON_VALUE])
-    fun test(@RequestBody androidDevice: AndroidDevice) : ResponseEntity<Any> {
+    fun startEmulator(@RequestBody androidDevice: AndroidDevice) : ResponseEntity<Any> {
         return ResponseEntity.ok(dockerService.startEmulator(androidDevice))
     }
 
