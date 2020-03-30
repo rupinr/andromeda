@@ -1,1 +1,1 @@
-rootProject.name = "emulator-service"
+rootProject.name = "andromeda"
