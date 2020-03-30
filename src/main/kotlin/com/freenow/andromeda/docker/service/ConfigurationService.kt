@@ -1,13 +1,11 @@
-package com.freenow.emulatorservice.docker.service
+package com.freenow.andromeda.docker.service
 
-import com.freenow.emulatorservice.docker.model.ConfigurationItem
-import com.freenow.emulatorservice.docker.model.ConfigurationKeys
-import com.freenow.emulatorservice.docker.repository.ConfigurationItemRepository
+import com.freenow.andromeda.docker.model.ConfigurationItem
+import com.freenow.andromeda.docker.model.ConfigurationKeys
+import com.freenow.andromeda.docker.repository.ConfigurationItemRepository
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.util.logging.Level
-import java.util.logging.Logger
 
 @Service
 class ConfigurationService {

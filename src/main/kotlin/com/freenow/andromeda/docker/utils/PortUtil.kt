@@ -1,4 +1,4 @@
-package com.freenow.emulatorservice.docker.utils
+package com.freenow.andromeda.docker.utils
 
 import java.io.IOException
 

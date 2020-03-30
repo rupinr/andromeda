@@ -1,4 +1,4 @@
-package com.freenow.emulatorservice.docker.service
+package com.freenow.andromeda.docker.service
 
 data class AndroidDevice(
         val partitionSize: Int = 2048,

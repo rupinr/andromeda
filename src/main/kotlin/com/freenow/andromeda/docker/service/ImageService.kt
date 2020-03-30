@@ -1,8 +1,8 @@
-package com.freenow.emulatorservice.docker.service
+package com.freenow.andromeda.docker.service
 
 import com.amihaiemil.docker.Docker
-import com.freenow.emulatorservice.docker.model.CustomResponse
-import com.freenow.emulatorservice.docker.model.DockerImage
+import com.freenow.andromeda.docker.model.CustomResponse
+import com.freenow.andromeda.docker.model.DockerImage
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 

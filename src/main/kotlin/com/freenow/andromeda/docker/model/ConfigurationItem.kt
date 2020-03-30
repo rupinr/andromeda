@@ -1,4 +1,4 @@
-package com.freenow.emulatorservice.docker.model
+package com.freenow.andromeda.docker.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import javax.persistence.Entity

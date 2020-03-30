@@ -1,8 +1,7 @@
-package com.freenow.emulatorservice.docker.controller
+package com.freenow.andromeda.docker.controller
 
-import com.freenow.emulatorservice.docker.model.ConfigurationItem
-import com.freenow.emulatorservice.docker.service.AndroidDevice
-import com.freenow.emulatorservice.docker.service.ConfigurationService
+import com.freenow.andromeda.docker.model.ConfigurationItem
+import com.freenow.andromeda.docker.service.ConfigurationService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity

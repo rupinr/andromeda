@@ -1,12 +1,12 @@
-package com.freenow.emulatorservice
+package com.freenow.andromeda
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 
 @SpringBootApplication
-class EmulatorServiceApplication
+class AndromedaApplication
 
 fun main(args: Array<String>) {
-	 runApplication<EmulatorServiceApplication>(*args)
+	 runApplication<AndromedaApplication>(*args)
 }

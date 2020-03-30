@@ -1,4 +1,4 @@
-package com.freenow.emulatorservice.docker.model
+package com.freenow.andromeda.docker.model
 
 data class CustomResponse(
         val data: Any? = null,

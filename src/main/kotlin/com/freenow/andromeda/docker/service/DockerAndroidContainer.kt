@@ -1,9 +1,8 @@
-package com.freenow.emulatorservice.docker.service
+package com.freenow.andromeda.docker.service
 
-import com.freenow.emulatorservice.docker.model.Container
-import com.freenow.emulatorservice.docker.model.HostConfig
-import com.freenow.emulatorservice.docker.model.HostIpPort
-import com.freenow.emulatorservice.docker.utils.PortUtil
+import com.freenow.andromeda.docker.model.Container
+import com.freenow.andromeda.docker.model.HostConfig
+import com.freenow.andromeda.docker.model.HostIpPort
 import com.google.gson.GsonBuilder
 import java.io.StringReader
 import javax.json.Json

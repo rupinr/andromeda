@@ -1,7 +1,7 @@
-package com.freenow.emulatorservice.docker.repository
+package com.freenow.andromeda.docker.repository
 
-import com.freenow.emulatorservice.docker.model.ConfigurationItem
-import com.freenow.emulatorservice.docker.model.ConfigurationKeys
+import com.freenow.andromeda.docker.model.ConfigurationItem
+import com.freenow.andromeda.docker.model.ConfigurationKeys
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.util.*

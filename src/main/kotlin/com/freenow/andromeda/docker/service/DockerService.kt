@@ -1,10 +1,10 @@
-package com.freenow.emulatorservice.docker.service
+package com.freenow.andromeda.docker.service
 
 import com.amihaiemil.docker.Docker
-import com.freenow.emulatorservice.docker.model.ConfigurationKeys
-import com.freenow.emulatorservice.docker.model.CustomResponse
-import com.freenow.emulatorservice.docker.model.RunningContainer
-import com.freenow.emulatorservice.docker.utils.PortUtil
+import com.freenow.andromeda.docker.model.ConfigurationKeys
+import com.freenow.andromeda.docker.model.CustomResponse
+import com.freenow.andromeda.docker.model.RunningContainer
+import com.freenow.andromeda.docker.utils.PortUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.Duration
