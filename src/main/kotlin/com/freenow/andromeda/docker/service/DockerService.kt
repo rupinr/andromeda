@@ -128,7 +128,7 @@ class DockerService {
                 container.kill()
                 container.remove()
             }).start()
-            CustomResponse(data = "Container cleanup in progress. Check status at /emulator/running")
+            CustomResponse(data = "Container cleanup in progress. Running status will updated shortly")
         } catch (ex: NoSuchElementException) {
             CustomResponse(error = "Error in killing $containerName. Container not found")
         } catch (ex: Exception) {
