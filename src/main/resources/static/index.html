@@ -38,6 +38,9 @@
         </tr>
         </tbody>
     </table>
+    <div  style="text-align:center; margin: 10px">
+        <button v-on:click="fetchData" class="pure-button pure-button-primary">Refresh!</button>
+    </div>
 </div>
 <script>
     var apiURL = "/andromeda/emulator";
@@ -77,6 +80,7 @@
                         alert(self.deleted.data);
                     };
                     xhr.send();
+                    this.fetchData();
                 }
 
             }
