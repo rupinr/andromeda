@@ -1,82 +1,88 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>Running Docker Containers</title>
     <script src="https://unpkg.com/vue"></script>
-    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css" integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47" crossorigin="anonymous">  </head>
-    <style scoped>
-      .button-error {
+    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css"
+          integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47" crossorigin="anonymous">
+</head>
+<style scoped>
+    .button-error {
         color: white;
-          background: rgb(202, 60, 60); /* this is a maroon */
-      }
-  </style>
-    <body>
-    <div id ="demo" class="">
-        <table class="pure-table">
-          <thead>
-            <tr >
-              <th >ADB Port</th>
-              <th >Web Port</th>
-              <th >Container Name</th>
-              <th >Running Since</th>
-              <th>Bamboo URL</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="record in running.data" class="pure-table-even">
-              <td>{{record.adbPort}}</td>
-              <td>{{record.webPort}}</td>
-              <td>{{record.containerName}}</td>
-              <td>{{record.runningDuration}}</td>
-              <td><a :href="record.jobUrl">Click Here</a></td>
-              <td><button v-on:click="kill(record.containerName)" class="pure-button button-error">Kill</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-    </div>
-    <script>
-      var apiURL ="/andromeda/emulator";
+        background: rgb(202, 60, 60); /* this is a maroon */
+    }
+</style>
+<body>
+<div id="demo" class="">
+    <table class="pure-table">
+        <thead>
+        <tr>
+            <th>ADB Port</th>
+            <th>Web Port</th>
+            <th>Container Name</th>
+            <th>Running Since</th>
+            <th>Bamboo URL</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="record in running.data" class="pure-table-even">
+            <td>{{record.adbPort}}</td>
+            <td>{{record.webPort}}</td>
+            <td>{{record.containerName}}</td>
+            <td>{{record.runningDuration}}</td>
+            <td><a :href="record.jobUrl">Click Here</a></td>
+            <td>
+                <button v-on:click="kill(record.containerName)" class="pure-button button-error">Kill</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<script>
+    var apiURL = "/andromeda/emulator";
 
-      /**
-       * Actual demo
-       */
+    /**
+     * Actual demo
+     */
 
-      var demo = new Vue({
+    var demo = new Vue({
         el: "#demo",
 
         data: {
-          running: {},
-          deleted:{}
+            running: {},
+            deleted: {}
         },
-        created: function() {
-          this.fetchData();
+        created: function () {
+            this.fetchData();
         },
 
         methods: {
-          fetchData: function() {
-            var xhr = new XMLHttpRequest();
-            var self = this;
-            xhr.open("GET", apiURL+"/running/");
-            xhr.onload = function() {
-              self.running = JSON.parse(xhr.responseText);
-              console.log(self.running);
-            };
-            xhr.send();
-          },
-          kill: function(containerName) {
-            var xhr = new XMLHttpRequest();
-            var self = this;
-            xhr.open("DELETE", apiURL+"/"+containerName);
-            xhr.onload = function() {
-              self.deleted = JSON.parse(xhr.responseText);
-              alert(self.deleted.data);
-            };
-            xhr.send();
-          }
+            fetchData: function () {
+                var xhr = new XMLHttpRequest();
+                var self = this;
+                xhr.open("GET", apiURL + "/running/");
+                xhr.onload = function () {
+                    self.running = JSON.parse(xhr.responseText);
+                    console.log(self.running);
+                };
+                xhr.send();
+            },
+            kill: function (containerName) {
+                if (window.confirm("With great power comes great responsibility.\nDo you really want to kill and make the build fail?")) {
+                    var xhr = new XMLHttpRequest();
+                    var self = this;
+                    xhr.open("DELETE", apiURL + "/" + containerName);
+                    xhr.onload = function () {
+                        self.deleted = JSON.parse(xhr.responseText);
+                        alert(self.deleted.data);
+                    };
+                    xhr.send();
+                }
+
+            }
         }
-      });
-    </script>
-  </body>
+    });
+</script>
+</body>
 </html>
