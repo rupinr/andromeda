@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Running Docker Containers</title>
-    <script src="https://unpkg.com/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
     <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css"
           integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47" crossorigin="anonymous">
 </head>
@@ -64,7 +64,6 @@
                 xhr.open("GET", apiURL + "/running/");
                 xhr.onload = function () {
                     self.running = JSON.parse(xhr.responseText);
-                    console.log(self.running);
                 };
                 xhr.send();
             },
