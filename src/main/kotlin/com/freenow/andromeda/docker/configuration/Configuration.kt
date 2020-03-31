@@ -15,4 +15,9 @@ class WebConfig : WebMvcConfigurer {
         registry.addMapping("/**").allowedMethods("GET", "POST", "PUT", "DELETE").allowedOrigins("*")
                 .allowedHeaders("*")
     }
+
+   override fun  addResourceHandlers(registry:ResourceHandlerRegistry) {
+        registry.addResourceHandler("/**")
+                .addResourceLocations("classpath:/static/");
+    }
 }

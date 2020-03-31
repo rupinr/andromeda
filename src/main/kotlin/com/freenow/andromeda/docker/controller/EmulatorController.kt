@@ -33,4 +33,5 @@ class EmulatorController {
     fun running() : ResponseEntity<Any> {
         return ResponseEntity.ok(dockerService.getRunningContainerDetails())
     }
+
 }
