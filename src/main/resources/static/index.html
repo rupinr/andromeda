@@ -78,6 +78,7 @@
         },
         created: function () {
             this.fetchData();
+            this.timer = setInterval(this.fetchData, 60000)
             this.fetchConfig()
         },
 
