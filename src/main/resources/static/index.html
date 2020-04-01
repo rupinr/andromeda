@@ -14,7 +14,7 @@
 </style>
 <body>
 <div id="demo" class="">
-    <div  style="margin: 10px;float: left;width: 100%;">
+    <div style="margin: 10px;float: left;width: 100%;">
         <div style="float:left;">Running Docker Containers</div>
         <button style="float:right;" v-on:click="fetchData" class="pure-button pure-button-primary">Refresh!</button>
     </div>
@@ -46,6 +46,18 @@
         </tbody>
     </table>
 
+    <button v-on:click="toggle()" class="pure-button button-error" style="padding: 20px">{{configButtonText}}</button>
+    <div v-if="!hideConfig" style="padding: 20px">
+        <table class="pure-table" >
+            <tbody>
+        <tr v-for="item in config">
+            <td>{{item.key}}</td>
+            <td><textarea v-model="item.value" style="width: 260px;"></textarea></td>
+           <td> <button v-on:click="saveConfig(item.key,item.value)" class="pure-button pure-button-primary" >Save</button> </td>
+        </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 <script>
     var apiURL = "/andromeda/emulator";
@@ -59,23 +71,56 @@
 
         data: {
             running: {},
-            deleted: {}
+            deleted: {},
+            config : [],
+            hideConfig : true,
+            configButtonText:"Show Configuration"
         },
         created: function () {
             this.fetchData();
+            this.fetchConfig()
         },
 
         filters: {
             linker: function (value) {
                 if (!value) return ''
-                return window.location.protocol+"//"+window.location.hostname+":"+value
+                return window.location.protocol + "//" + window.location.hostname + ":" + value
             }
         },
 
         methods: {
+            toggle:function() {
+                this.hideConfig = !this.hideConfig
+                if(this.hideConfig) {
+                    this.configButtonText = "Show Configuration"
+                } else {
+                    this.configButtonText = "Hide Configuration"
 
+                }
+            },
             openVnc: function (port) {
-                window.open(window.location.hostname+":"+port)
+                window.open(window.location.hostname + ":" + port)
+            },
+
+            saveConfig: function(key,value) {
+                var xhr = new XMLHttpRequest();
+                var self = this;
+                xhr.open("POST","/andromeda/maintenance/configuration/");
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.onload = function () {
+                    alert(xhr.responseText)
+                    self.fetchConfig()
+                };
+                xhr.send("{\"key\":\""+key+"\""+",\"value\":"+"\""+value.trim()+"\""+"}");
+            },
+            fetchConfig: function () {
+                var xhr = new XMLHttpRequest();
+                var self = this;
+                xhr.open("GET", "/andromeda/maintenance/configuration/");
+                xhr.onload = function () {
+                    self.config = JSON.parse(xhr.responseText);
+                };
+                xhr.send();
             },
 
             fetchData: function () {
