@@ -13,8 +13,8 @@
     }
 </style>
 <body>
-<div id="demo" class="">
-    <div style="margin: 10px;float: left;width: 100%;">
+<div id="demo" style="padding: 1%">
+    <div style="margin: 10px 0;float: left;width: 100%;">
         <div style="float:left;">Running Docker Containers: Last updated: {{lastUpdated}}</div>
         <button style="float:right;" v-on:click="fetchData" class="pure-button pure-button-primary">Refresh!</button>
     </div>
@@ -46,13 +46,13 @@
         </tbody>
     </table>
 
-    <button v-on:click="toggle()" class="pure-button button-error" style="padding: 20px">{{configButtonText}}</button>
+    <button v-on:click="toggle()" class="pure-button button-error" style="margin-top: 20px; padding: 10px">{{configButtonText}}</button>
     <div v-if="!hideConfig" style="padding: 20px">
         <table class="pure-table" >
             <tbody>
         <tr v-for="item in config">
             <td>{{item.key}}</td>
-            <td><textarea v-model="item.value" style="width: 260px;"></textarea></td>
+            <td><textarea v-model="item.value" style="width: 260px; resize: none"></textarea></td>
            <td> <button v-on:click="saveConfig(item.key,item.value)" class="pure-button pure-button-primary" >Save</button> </td>
         </tr>
             </tbody>
