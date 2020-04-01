@@ -15,7 +15,7 @@
 <body>
 <div id="demo" class="">
     <div style="margin: 10px;float: left;width: 100%;">
-        <div style="float:left;">Running Docker Containers</div>
+        <div style="float:left;">Running Docker Containers: Last updated: {{lastUpdated}}</div>
         <button style="float:right;" v-on:click="fetchData" class="pure-button pure-button-primary">Refresh!</button>
     </div>
     <table class="pure-table" style="width: 100%">
@@ -74,7 +74,8 @@
             deleted: {},
             config : [],
             hideConfig : true,
-            configButtonText:"Show Configuration"
+            configButtonText:"Show Configuration",
+            lastUpdated: Date()
         },
         created: function () {
             this.fetchData();
@@ -132,6 +133,7 @@
                     self.running = JSON.parse(xhr.responseText);
                 };
                 xhr.send();
+                self.lastUpdated = Date()
             },
             kill: function (containerName) {
                 if (window.confirm("With great power comes great responsibility.\nDo you really want to kill and make the build fail?")) {
