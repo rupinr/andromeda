@@ -5,6 +5,8 @@ import com.freenow.andromeda.docker.model.ConfigurationKeys
 import com.freenow.andromeda.docker.model.CustomResponse
 import com.freenow.andromeda.docker.model.RunningContainer
 import com.freenow.andromeda.docker.utils.PortUtil
+import com.freenow.andromeda.extensions.StringExtensions.trimQuotes
+import com.freenow.andromeda.extensions.StringExtensions.trimSlash
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.Duration
@@ -14,6 +16,7 @@ import javax.json.JsonObject
 
 private const val NAMES = "Names"
 private const val NAME = "Name"
+private const val IMAGE = "Image"
 private const val HOST_CONFIG ="HostConfig"
 private const val PORT_BINDINGS ="PortBindings"
 private const val HOST_PORT ="HostPort"
@@ -73,16 +76,16 @@ class DockerService {
         isRunningContainerLimitReached()
         var healthStatus = ""
         healthStatus = try {
-            val container = dockerClient.containers().first { it[NAMES]!!.asJsonArray()[0].toString() == "\"/$containerName\"" }
+            val container = getRelevantContainers().first { it[NAMES]!!.asJsonArray()[0].toString().trimQuotes().trimSlash() == containerName }
             container.inspect()[STATE]!!.asJsonObject()[HEALTH]!!.asJsonObject()[STATUS]!!.toString()
         } catch (ex: Exception) {
             UNKNOWN
         }
-        return CustomResponse(data = healthStatus.replace("\"", ""))
+        return CustomResponse(data = healthStatus.trimQuotes())
     }
 
     fun isRunningContainerLimitReached(): Boolean {
-        val containers = dockerClient.containers()
+        val containers = getRelevantContainers()
         var size = 0
         for (container in containers) {
             size++
@@ -91,13 +94,12 @@ class DockerService {
     }
 
     fun getRunningContainerDetails(): CustomResponse {
-        val containers = dockerClient.containers()
-        val list = containers.map {
+        val list = getRelevantContainers().map {
             val containerData = it.inspect()
-            val containerName = containerData[NAME]!!.toString().replace("/", "").replace("\"", "")
+            val containerName = containerData[NAME]!!.toString().trimSlash().trimQuotes()
             RunningContainer(jobUrl = getBambooUrl() + containerName,
                     containerName = containerName,
-                    runningDuration = containerData[STATE]!!.asJsonObject()[STARTED_AT].toString().replace("\"", "").getRunningDuration()
+                    runningDuration = containerData[STATE]!!.asJsonObject()[STARTED_AT].toString().trimQuotes().getRunningDuration()
             ,adbPort = getPort(containerData, ADB_PORT),webPort = getPort(containerData, WEB_PORT))
         }
         return CustomResponse(data = list)
@@ -110,7 +112,7 @@ class DockerService {
                 .asJsonObject()[key]!!
                 .asJsonArray()[0].asJsonObject()[HOST_PORT]
                 .toString()
-                .replace("\"","")
+                .trimQuotes()
                 .toInt()
     }
 
@@ -124,7 +126,7 @@ class DockerService {
     fun killContainer(containerName: String): CustomResponse {
         return try {
             Thread(Runnable {
-                val container = dockerClient.containers().first { it[NAMES]!!.asJsonArray()[0].toString() == "\"/$containerName\"" }
+                val container = getRelevantContainers().first { it[NAMES]!!.asJsonArray()[0].toString().trimQuotes().trimSlash() == containerName }
                 container.kill()
                 container.remove()
             }).start()
@@ -142,5 +144,6 @@ class DockerService {
 
     private fun getImageName() = configurationService.getConfigurationSafely(ConfigurationKeys.DOCKER_IMAGE, IMAGE_NAME)
 
+    private fun getRelevantContainers () = dockerClient.containers().filter { it[IMAGE]!!.toString().trimQuotes() == getImageName() }
 
 }
