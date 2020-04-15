@@ -125,11 +125,11 @@ class DockerService {
 
     fun killContainer(containerName: String): CustomResponse {
         return try {
-            Thread(Runnable {
+            Thread {
                 val container = getRelevantContainers().first { it[NAMES]!!.asJsonArray()[0].toString().trimQuotes().trimSlash() == containerName }
                 container.kill()
                 container.remove()
-            }).start()
+            }.start()
             CustomResponse(data = "Container cleanup in progress. Running status will updated shortly")
         } catch (ex: NoSuchElementException) {
             CustomResponse(error = "Error in killing $containerName. Container not found")
