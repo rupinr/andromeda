@@ -20,5 +20,5 @@ data class ConfigurationItem(
 )
 
 enum class ConfigurationKeys{
-    NO_OP, BAMBOO_URL,CONTAINER_LIMIT,DOCKER_IMAGE
+    NO_OP, CI_TOOL_URL,CONTAINER_LIMIT,DOCKER_IMAGE
 }

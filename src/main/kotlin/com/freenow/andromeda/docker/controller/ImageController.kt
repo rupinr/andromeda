@@ -12,17 +12,17 @@ import org.springframework.web.bind.annotation.*
 class ImageController {
 
     @Autowired
-    lateinit var imgageService: ImageService
+    lateinit var imageService: ImageService
 
 
 
     @PutMapping(consumes =  [MediaType.APPLICATION_JSON_VALUE], produces =  [MediaType.APPLICATION_JSON_VALUE])
     fun pullImage(@RequestBody dockerImage: DockerImage) : ResponseEntity<Any> {
-        return ResponseEntity.ok( imgageService.pullImage(dockerImage))
+        return ResponseEntity.ok( imageService.pullImage(dockerImage))
     }
 
     @GetMapping(path = ["list"],produces =  [MediaType.APPLICATION_JSON_VALUE])
     fun getImages() : ResponseEntity<Any> {
-        return ResponseEntity.ok( imgageService.allImages())
+        return ResponseEntity.ok( imageService.allImages())
     }
 }

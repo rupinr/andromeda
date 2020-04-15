@@ -1,4 +1,4 @@
-package com.freenow.andromeda.extensions
+package com.freenow.andromeda.docker.utils
 
 object StringExtensions {
 

@@ -5,8 +5,8 @@ import com.freenow.andromeda.docker.model.ConfigurationKeys
 import com.freenow.andromeda.docker.model.CustomResponse
 import com.freenow.andromeda.docker.model.RunningContainer
 import com.freenow.andromeda.docker.utils.PortUtil
-import com.freenow.andromeda.extensions.StringExtensions.trimQuotes
-import com.freenow.andromeda.extensions.StringExtensions.trimSlash
+import com.freenow.andromeda.docker.utils.StringExtensions.trimQuotes
+import com.freenow.andromeda.docker.utils.StringExtensions.trimSlash
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.Duration
@@ -17,12 +17,11 @@ import javax.json.JsonObject
 private const val NAMES = "Names"
 private const val NAME = "Name"
 private const val IMAGE = "Image"
-private const val HOST_CONFIG ="HostConfig"
-private const val PORT_BINDINGS ="PortBindings"
-private const val HOST_PORT ="HostPort"
-private const val ADB_PORT ="5555/tcp"
-private const val WEB_PORT ="6080/tcp"
-
+private const val HOST_CONFIG = "HostConfig"
+private const val PORT_BINDINGS = "PortBindings"
+private const val HOST_PORT = "HostPort"
+private const val ADB_PORT = "5555/tcp"
+private const val WEB_PORT = "6080/tcp"
 
 
 private const val STATE = "State"
@@ -32,7 +31,7 @@ private const val UNKNOWN = "unknown"
 private const val STARTED_AT = "StartedAt"
 
 private const val CONTAINER_LIMIT = 3
-private const val BAMBOO_JOB_URL = "https://bamboo.intapps.it/browse/"
+private const val DEFAULT_CI_URL = "https://bamboo.intapps.it/browse/"
 private const val IMAGE_NAME = "budtmo/docker-android-x86-9.0"
 
 @Service
@@ -48,25 +47,25 @@ class DockerService {
     fun startEmulator(androidDevice: AndroidDevice): CustomResponse {
         return try {
             if (isRunningContainerLimitReached()) {
-                throw Exception("Running container limit of " + configurationService.getConfigurationSafely(ConfigurationKeys.CONTAINER_LIMIT,CONTAINER_LIMIT.toString()) + " has been reached.")
+                throw Exception("Running container limit of " + configurationService.getConfigurationSafely(ConfigurationKeys.CONTAINER_LIMIT, CONTAINER_LIMIT.toString()) + " has been reached.")
             }
-           val  adbPort =PortUtil.getAdbPort()
+            val adbPort = PortUtil.getAdbPort()
             val webPort = PortUtil.getWebPort()
             val container = dockerClient.containers()
                     .create(androidDevice.containerName,
                             DockerAndroidContainer.getV3Container(AndroidDevice(
                                     imageName = getImageName(),
                                     deviceName = androidDevice.deviceName, containerName = androidDevice.containerName),
-                            adbPort = adbPort,
-                            webPort = webPort))
+                                    adbPort = adbPort,
+                                    webPort = webPort))
             container.start()
             CustomResponse(data = RunningContainer(
-                    adbPort =adbPort,
+                    adbPort = adbPort,
                     webPort = webPort,
                     containerName = androidDevice.containerName,
                     runningDuration = "0 minutes",
-                    jobUrl = getBambooUrl()+androidDevice.containerName
-            ),message = "Wait for container to be healthy.")
+                    jobUrl = getBambooUrl() + androidDevice.containerName
+            ), message = "Wait for container to be healthy.")
         } catch (ex: Exception) {
             CustomResponse(error = ex.localizedMessage)
         }
@@ -100,7 +99,7 @@ class DockerService {
             RunningContainer(jobUrl = getBambooUrl() + containerName,
                     containerName = containerName,
                     runningDuration = containerData[STATE]!!.asJsonObject()[STARTED_AT].toString().trimQuotes().getRunningDuration()
-            ,adbPort = getPort(containerData, ADB_PORT),webPort = getPort(containerData, WEB_PORT))
+                    , adbPort = getPort(containerData, ADB_PORT), webPort = getPort(containerData, WEB_PORT))
         }
         return CustomResponse(data = list)
     }
@@ -140,10 +139,10 @@ class DockerService {
 
     private fun getMaxContainerCount(): Int = configurationService.getConfigurationSafely(ConfigurationKeys.CONTAINER_LIMIT, CONTAINER_LIMIT.toString()).toInt()
 
-    private fun getBambooUrl(): String = configurationService.getConfigurationSafely(ConfigurationKeys.BAMBOO_URL, BAMBOO_JOB_URL)
+    private fun getBambooUrl(): String = configurationService.getConfigurationSafely(ConfigurationKeys.CI_TOOL_URL, DEFAULT_CI_URL)
 
     private fun getImageName() = configurationService.getConfigurationSafely(ConfigurationKeys.DOCKER_IMAGE, IMAGE_NAME)
 
-    private fun getRelevantContainers () = dockerClient.containers().filter { it[IMAGE]!!.toString().trimQuotes() == getImageName() }
+    private fun getRelevantContainers() = dockerClient.containers().filter { it[IMAGE]!!.toString().trimQuotes() == getImageName() }
 
 }
