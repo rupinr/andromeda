@@ -26,7 +26,7 @@
             <th>VNC Viewer</th>
             <th>Container Name</th>
             <th>Running Since</th>
-            <th>Bamboo URL</th>
+            <th>CI URL</th>
             <th>Action</th>
         </tr>
         </thead>
@@ -39,7 +39,7 @@
             </td>
             <td>{{record.containerName}}</td>
             <td>{{record.runningDuration}}</td>
-            <td><a :href="record.jobUrl" target="_blank">Open Bamboo Build</a></td>
+            <td><a :href="record.jobUrl" target="_blank">Open Build</a></td>
             <td>
                 <button v-on:click="kill(record.containerName)" class="pure-button button-error">Kill</button>
             </td>
