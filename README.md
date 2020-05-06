@@ -23,6 +23,10 @@ For real world usage, it is recommended to run this as a systemctl service.
 A monitoring page will be available at http://localhost:8080/andromeda/index.html
  
 ```
+![Monitoring Page](https://github.com/rupinr/andromeda/blob/master/docs/screenshot.png)
+
+
+
 For the rest endpoints, refer the swagger [definition](https://app.swaggerhub.com/apis-docs/rupinr/andromeda/0.1#/)
 
 
