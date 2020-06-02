@@ -45,6 +45,12 @@ class DockerService {
     lateinit var configurationService: ConfigurationService
 
     fun startEmulator(androidDevice: AndroidDevice): CustomResponse {
+        try{
+            killContainerCommand(androidDevice.containerName)
+        }
+        catch (e: Exception) {
+            // NO OP
+        }
         return try {
             if (isRunningContainerLimitReached()) {
                 throw Exception("Running container limit of " + configurationService.getConfigurationSafely(ConfigurationKeys.CONTAINER_LIMIT, CONTAINER_LIMIT.toString()) + " has been reached.")
@@ -125,9 +131,7 @@ class DockerService {
     fun killContainer(containerName: String): CustomResponse {
         return try {
             Thread {
-                val container = getRelevantContainers().first { it[NAMES]!!.asJsonArray()[0].toString().trimQuotes().trimSlash() == containerName }
-                container.kill()
-                container.remove()
+                killContainerCommand(containerName)
             }.start()
             CustomResponse(data = "Container cleanup in progress. Running status will updated shortly")
         } catch (ex: NoSuchElementException) {
@@ -135,6 +139,12 @@ class DockerService {
         } catch (ex: Exception) {
             CustomResponse(error = "Error in killing $containerName. " + ex.localizedMessage)
         }
+    }
+
+    private fun killContainerCommand(containerName: String) {
+        val container = getRelevantContainers().first { it[NAMES]!!.asJsonArray()[0].toString().trimQuotes().trimSlash() == containerName }
+        container.kill()
+        container.remove()
     }
 
     private fun getMaxContainerCount(): Int = configurationService.getConfigurationSafely(ConfigurationKeys.CONTAINER_LIMIT, CONTAINER_LIMIT.toString()).toInt()
