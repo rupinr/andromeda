@@ -7,13 +7,14 @@ import com.freenow.andromeda.docker.model.RunningContainer
 import com.freenow.andromeda.docker.utils.PortUtil
 import com.freenow.andromeda.docker.utils.StringExtensions.trimQuotes
 import com.freenow.andromeda.docker.utils.StringExtensions.trimSlash
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.Instant
 import javax.json.JsonObject
-
+import mu.KotlinLogging.logger
 
 private const val NAMES = "Names"
 private const val NAME = "Name"
@@ -42,6 +43,7 @@ private const val THRESHOLD_FOR_CLEANUP = 1000L*3600*2.5
 @Service
 class DockerService {
 
+    private val kLogger = logger{}
 
     @Autowired
     lateinit var dockerClient: Docker
@@ -54,7 +56,7 @@ class DockerService {
             killContainerCommand(androidDevice.containerName)
         }
         catch (e: Exception) {
-            // NO OP
+            kLogger.info ("Either non existing container or unable to kill container",e )
         }
         return try {
             if (isRunningContainerLimitReached()) {
@@ -137,6 +139,7 @@ class DockerService {
         getRelevantContainers().filter { it.inspect().extractStartTimeFrom().getRunningDurationInSeconds() > THRESHOLD_FOR_CLEANUP }.forEach {
             it.kill()
             it.remove()
+            kLogger.info { "Force killing container" }
         }
     }
 
