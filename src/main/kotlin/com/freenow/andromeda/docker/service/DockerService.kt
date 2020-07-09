@@ -7,7 +7,6 @@ import com.freenow.andromeda.docker.model.RunningContainer
 import com.freenow.andromeda.docker.utils.PortUtil
 import com.freenow.andromeda.docker.utils.StringExtensions.trimQuotes
 import com.freenow.andromeda.docker.utils.StringExtensions.trimSlash
-import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -37,8 +36,8 @@ private const val DEFAULT_CI_URL = "https://bamboo.intapps.it/browse/"
 private const val IMAGE_NAME = "budtmo/docker-android-x86-9.0"
 
 
-private const val CLEANUP_INTERVAL = 1000L*3600*3
-private const val THRESHOLD_FOR_CLEANUP = 1000L*3600*2.5
+private const val CLEANUP_INTERVAL_IN_SECONDS = 1000L*3600*3
+private const val THRESHOLD_FOR_RUNNING_CONTAINER_TIME_IN_SECONDS = 1000L*3600*2.5
 
 @Service
 class DockerService {
@@ -134,13 +133,14 @@ class DockerService {
     }
 
 
-    @Scheduled(fixedDelay = CLEANUP_INTERVAL)
+    @Scheduled(fixedDelay = CLEANUP_INTERVAL_IN_SECONDS)
     fun cleanContainer() {
-        getRelevantContainers().filter { it.inspect().extractStartTimeFrom().getRunningDurationInSeconds() > THRESHOLD_FOR_CLEANUP }.forEach {
+        getRelevantContainers().filter { it.inspect().extractStartTimeFrom().getRunningDurationInSeconds() > THRESHOLD_FOR_RUNNING_CONTAINER_TIME_IN_SECONDS }.forEach {
             it.kill()
             it.remove()
             kLogger.info { "Force killing container" }
         }
+        kLogger.info { "Finished killing container" }
     }
 
     private fun JsonObject.extractStartTimeFrom() =
@@ -149,7 +149,9 @@ class DockerService {
     private fun String.getRunningDurationInSeconds(): Long {
         val old = Instant.parse(this)
         val now = Instant.now()
-        return Duration.between(old, now).seconds
+        val differenceInSeconds = Duration.between(old, now).seconds
+        kLogger.info { String.format("Containers are running for %s seconds",differenceInSeconds) }
+        return differenceInSeconds
     }
 
     fun killContainer(containerName: String): CustomResponse {
