@@ -7,12 +7,14 @@ import com.freenow.andromeda.docker.model.RunningContainer
 import com.freenow.andromeda.docker.utils.PortUtil
 import com.freenow.andromeda.docker.utils.StringExtensions.trimQuotes
 import com.freenow.andromeda.docker.utils.StringExtensions.trimSlash
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.Instant
 import javax.json.JsonObject
-
+import mu.KotlinLogging.logger
 
 private const val NAMES = "Names"
 private const val NAME = "Name"
@@ -34,9 +36,14 @@ private const val CONTAINER_LIMIT = 3
 private const val DEFAULT_CI_URL = "https://bamboo.intapps.it/browse/"
 private const val IMAGE_NAME = "budtmo/docker-android-x86-9.0"
 
+
+private const val CLEANUP_INTERVAL = 1000L*3600*3
+private const val THRESHOLD_FOR_CLEANUP = 1000L*3600*2.5
+
 @Service
 class DockerService {
 
+    private val kLogger = logger{}
 
     @Autowired
     lateinit var dockerClient: Docker
@@ -49,7 +56,7 @@ class DockerService {
             killContainerCommand(androidDevice.containerName)
         }
         catch (e: Exception) {
-            // NO OP
+            kLogger.info ("Either non existing container or unable to kill container",e )
         }
         return try {
             if (isRunningContainerLimitReached()) {
@@ -122,10 +129,27 @@ class DockerService {
     }
 
     private fun String.getRunningDuration(): String {
+        val seconds = this.getRunningDurationInSeconds()
+        return String.format("%d Hours %02d Minutes and %02d Seconds", seconds / 3600, (seconds % 3600) / 60, (seconds % 60))
+    }
+
+
+    @Scheduled(fixedDelay = CLEANUP_INTERVAL)
+    fun cleanContainer() {
+        getRelevantContainers().filter { it.inspect().extractStartTimeFrom().getRunningDurationInSeconds() > THRESHOLD_FOR_CLEANUP }.forEach {
+            it.kill()
+            it.remove()
+            kLogger.info { "Force killing container" }
+        }
+    }
+
+    private fun JsonObject.extractStartTimeFrom() =
+         this[STATE]!!.asJsonObject()[STARTED_AT].toString().trimQuotes()
+
+    private fun String.getRunningDurationInSeconds(): Long {
         val old = Instant.parse(this)
         val now = Instant.now()
-        val seconds = Duration.between(old, now).seconds
-        return String.format("%d Hours %02d Minutes and %02d Seconds", seconds / 3600, (seconds % 3600) / 60, (seconds % 60))
+        return Duration.between(old, now).seconds
     }
 
     fun killContainer(containerName: String): CustomResponse {
